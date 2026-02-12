@@ -4,9 +4,9 @@ import { getProductById } from '../../../models/product-mysql';
 // GET /api/products/[id] - fetch product by id
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const id = Number(params.id);
+  const id = Number((await context.params).id);
   const product = await getProductById(id);
   if (!product) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });

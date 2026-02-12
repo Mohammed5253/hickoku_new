@@ -1,0 +1,111 @@
+{
+  "common": {
+    "language": "Español"
+  },
+  "navigation": {
+    "new": "Nuevo",
+    "forHer": "Para Ella",
+    "forHim": "Para Él",
+    "collections": "Colecciones",
+    "search": "Buscar..."
+  },
+  "hero": {
+    "silkMusk": {
+      "title": "Seda Almizcle",
+      "subtitle": "Experimenta la Elegancia Pura",
+      "description": "Una mezcla delicada de flores blancas y almizcle suave"
+    },
+    "midnightAgar": {
+      "title": "Agar Medianoche",
+      "subtitle": "Abraza el Misterio",
+      "description": "Notas de madera profunda con un toque de especias"
+    },
+    "shopNow": "Comprar Ahora"
+  },
+  "footer": {
+    "brand": "HK",
+    "description": "Creando fragancias de lujo desde 1990. Experimenta el arte de la perfumería.",
+    "shop": "Comprar",
+    "newArrivals": "Novedades",
+    "bestSellers": "Más Vendidos",
+    "giftSets": "Conjuntos de Regalo",
+    "support": "Soporte",
+    "contactUs": "Contáctenos",
+    "shippingInfo": "Información de Envío",
+    "returns": "Devoluciones",
+    "faq": "Preguntas Frecuentes",
+    "legal": "Legal",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos y Condiciones"
+  },
+  "products": {
+    "viewAll": "Ver Toda la Colección",
+    "addToCart": "Añadir al Carrito",
+    "viewDetails": "Ver Detalles"
+  },
+  "cart": {
+    "yourCart": "Tu Carrito",
+    "emptyCart": "Tu carrito está vacío",
+    "addProducts": "Añade algunos productos para empezar",
+    "sku": "SKU",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "checkout": "Pagar",
+    "continueShopping": "Continuar Comprando",
+    "removeItem": "Eliminar"
+  },
+  "checkout": {
+    "title": "Pagar",
+    "address": "Dirección",
+    "shipping": "Envío",
+    "payment": "Pago",
+    "confirmation": "Confirmación de Pedido",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "phone": "Número de Teléfono",
+    "addressLine1": "Línea de Dirección 1",
+    "addressLine2": "Línea de Dirección 2",
+    "city": "Ciudad",
+    "state": "Estado",
+    "zipCode": "Código Postal",
+    "country": "País",
+    "standard": "Estándar (₹100)",
+    "express": "Expreso (₹300)",
+    "overnight": "Entrega al Día Siguiente (₹500)",
+    "paymentVerified": "Pago verificado",
+    "continueToNextStep": "Continuar al Siguiente Paso",
+    "placeOrder": "Realizar Pedido"
+  },
+  "orderConfirmation": {
+    "confirmed": "¡Pedido Confirmado!",
+    "thank_you": "Gracias por tu compra",
+    "orderReceived": "Tu pedido ha sido recibido y se está procesando",
+    "orderNumber": "Número de Pedido",
+    "checkEmail": "Verifica tu correo para la confirmación y actualización",
+    "orderStatus": "Estado del Pedido",
+    "estimatedDelivery": "Entrega Estimada",
+    "trackOrder": "Rastrear Pedido",
+    "continueShop": "Continuar Comprando"
+  },
+  "productNames": {
+    "silkMusk": "Seda Almizcle",
+    "zafera": "Zafera",
+    "midnightAgar": "Agar Medianoche",
+    "raafa": "Raafa",
+    "velvira": "Velvira",
+    "lumiflora": "Lumiflora",
+    "nufra": "Nufra",
+    "roselia": "Roselia",
+    "blancaBloom": "Blanca Bloom",
+    "azelia": "Azelia",
+    "noctyra": "Noctyra",
+    "softVeil": "Velo Suave",
+    "elune": "Élune"
+  },
+  "messages": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito"
+  }
+}

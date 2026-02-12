@@ -1,0 +1,111 @@
+{
+  "common": {
+    "language": "Français"
+  },
+  "navigation": {
+    "new": "Nouveau",
+    "forHer": "Pour Elle",
+    "forHim": "Pour Lui",
+    "collections": "Collections",
+    "search": "Rechercher..."
+  },
+  "hero": {
+    "silkMusk": {
+      "title": "Soie Musc",
+      "subtitle": "Vivez l'Élégance Pure",
+      "description": "Un mélange délicat de fleurs blanches et de musc doux"
+    },
+    "midnightAgar": {
+      "title": "Agar Minuit",
+      "subtitle": "Embrassez le Mystère",
+      "description": "Des notes boisées profondes avec une touche d'épices"
+    },
+    "shopNow": "Acheter Maintenant"
+  },
+  "footer": {
+    "brand": "HK",
+    "description": "Création de parfums de luxe depuis 1990. Découvrez l'art de la parfumerie.",
+    "shop": "Boutique",
+    "newArrivals": "Nouveautés",
+    "bestSellers": "Meilleures Ventes",
+    "giftSets": "Coffrets Cadeaux",
+    "support": "Support",
+    "contactUs": "Nous Contacter",
+    "shippingInfo": "Informations de Livraison",
+    "returns": "Retours",
+    "faq": "FAQ",
+    "legal": "Légal",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions Générales"
+  },
+  "products": {
+    "viewAll": "Voir Toute la Collection",
+    "addToCart": "Ajouter au Panier",
+    "viewDetails": "Voir les Détails"
+  },
+  "cart": {
+    "yourCart": "Votre Panier",
+    "emptyCart": "Votre panier est vide",
+    "addProducts": "Ajoutez des produits pour commencer",
+    "sku": "Référence",
+    "total": "Total",
+    "subtotal": "Sous-total",
+    "checkout": "Passer la Commande",
+    "continueShopping": "Continuer l'Achat",
+    "removeItem": "Supprimer"
+  },
+  "checkout": {
+    "title": "Passer la Commande",
+    "address": "Adresse",
+    "shipping": "Livraison",
+    "payment": "Paiement",
+    "confirmation": "Confirmation de Commande",
+    "firstName": "Prénom",
+    "lastName": "Nom de Famille",
+    "email": "Email",
+    "phone": "Numéro de Téléphone",
+    "addressLine1": "Adresse Ligne 1",
+    "addressLine2": "Adresse Ligne 2",
+    "city": "Ville",
+    "state": "État/Province",
+    "zipCode": "Code Postal",
+    "country": "Pays",
+    "standard": "Standard (₹100)",
+    "express": "Express (₹300)",
+    "overnight": "Lendemain (₹500)",
+    "paymentVerified": "Paiement vérifié",
+    "continueToNextStep": "Continuer à l'Étape Suivante",
+    "placeOrder": "Valider la Commande"
+  },
+  "orderConfirmation": {
+    "confirmed": "Commande Confirmée!",
+    "thank_you": "Merci pour votre achat",
+    "orderReceived": "Votre commande a été reçue et est en cours de traitement",
+    "orderNumber": "Numéro de Commande",
+    "checkEmail": "Vérifiez votre email pour la confirmation et les mises à jour",
+    "orderStatus": "État de la Commande",
+    "estimatedDelivery": "Livraison Estimée",
+    "trackOrder": "Suivre la Commande",
+    "continueShop": "Continuer l'Achat"
+  },
+  "productNames": {
+    "silkMusk": "Soie Musc",
+    "zafera": "Zafera",
+    "midnightAgar": "Agar Minuit",
+    "raafa": "Raafa",
+    "velvira": "Velvira",
+    "lumiflora": "Lumiflora",
+    "nufra": "Nufra",
+    "roselia": "Roselia",
+    "blancaBloom": "Blanca Bloom",
+    "azelia": "Azelia",
+    "noctyra": "Noctyra",
+    "softVeil": "Voile Doux",
+    "elune": "Élune"
+  },
+  "messages": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "success": "Succès"
+  }
+}

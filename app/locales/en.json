@@ -1,0 +1,111 @@
+{
+  "common": {
+    "language": "English"
+  },
+  "navigation": {
+    "new": "New",
+    "forHer": "For Her",
+    "forHim": "For Him",
+    "collections": "Collections",
+    "search": "Search..."
+  },
+  "hero": {
+    "silkMusk": {
+      "title": "Silk Musk",
+      "subtitle": "Experience Pure Elegance",
+      "description": "A delicate blend of white florals and soft musk"
+    },
+    "midnightAgar": {
+      "title": "Midnight Agar",
+      "subtitle": "Embrace the Mystery",
+      "description": "Deep, woody notes with a touch of spice"
+    },
+    "shopNow": "Shop Now"
+  },
+  "footer": {
+    "brand": "HK",
+    "description": "Crafting luxury fragrances since 1990. Experience the art of perfumery.",
+    "shop": "Shop",
+    "newArrivals": "New Arrivals",
+    "bestSellers": "Best Sellers",
+    "giftSets": "Gift Sets",
+    "support": "Support",
+    "contactUs": "Contact Us",
+    "shippingInfo": "Shipping Info",
+    "returns": "Returns",
+    "faq": "FAQ",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "products": {
+    "viewAll": "View All Collection",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details"
+  },
+  "cart": {
+    "yourCart": "Your Cart",
+    "emptyCart": "Your cart is empty",
+    "addProducts": "Add some products to get started",
+    "sku": "SKU",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "checkout": "Checkout",
+    "continueShopping": "Continue Shopping",
+    "removeItem": "Remove"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "address": "Address",
+    "shipping": "Shipping",
+    "payment": "Payment",
+    "confirmation": "Order Confirmation",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "addressLine1": "Address Line 1",
+    "addressLine2": "Address Line 2",
+    "city": "City",
+    "state": "State",
+    "zipCode": "Zip Code",
+    "country": "Country",
+    "standard": "Standard (₹100)",
+    "express": "Express (₹300)",
+    "overnight": "Overnight (₹500)",
+    "paymentVerified": "Payment verified",
+    "continueToNextStep": "Continue to Next Step",
+    "placeOrder": "Place Order"
+  },
+  "orderConfirmation": {
+    "confirmed": "Order Confirmed!",
+    "thank_you": "Thank you for your purchase",
+    "orderReceived": "Your order has been received and is being processed",
+    "orderNumber": "Order Number",
+    "checkEmail": "Check your email for order confirmation and updates",
+    "orderStatus": "Order Status",
+    "estimatedDelivery": "Estimated Delivery",
+    "trackOrder": "Track Order",
+    "continueShop": "Continue Shopping"
+  },
+  "productNames": {
+    "silkMusk": "Silk Musk",
+    "zafera": "Zafera",
+    "midnightAgar": "Midnight Agar",
+    "raafa": "Raafa",
+    "velvira": "Velvira",
+    "lumiflora": "Lumiflora",
+    "nufra": "Nufra",
+    "roselia": "Roselia",
+    "blancaBloom": "Blanca Bloom",
+    "azelia": "Azelia",
+    "noctyra": "Noctyra",
+    "softVeil": "Soft Veil",
+    "elune": "Élune"
+  },
+  "messages": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success"
+  }
+}

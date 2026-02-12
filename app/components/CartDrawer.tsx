@@ -1,0 +1,185 @@
+"use client";
+
+import { motion, AnimatePresence } from "motion/react";
+import { X, Plus, Minus, Trash2 } from "lucide-react";
+import { useCart } from "../hooks/useCart";
+import Link from "next/link";
+import { useLocale } from "../context/LocaleContext";
+
+export function CartDrawer() {
+  const {
+    items,
+    isOpen,
+    closeCart,
+    removeFromCart,
+    updateQuantity,
+    getTotalPrice,
+  } = useCart();
+  const { t } = useLocale();
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeCart}
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+          />
+
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: 400 }}
+            animate={{ x: 0 }}
+            exit={{ x: 400 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed right-0 top-0 h-screen w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-semibold">{t("cart.yourCart")}</h2>
+              <motion.button
+                whileHover={{ rotate: 90 }}
+                onClick={closeCart}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </motion.button>
+            </div>
+
+            {/* Cart Items */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {items.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center justify-center h-full text-center"
+                >
+                  <div className="text-6xl mb-4">🛍️</div>
+                  <p className="text-gray-600 text-lg">{t("cart.emptyCart")}</p>
+                  <p className="text-gray-400 text-sm mt-2">
+                    {t("cart.addProducts")}
+                  </p>
+                </motion.div>
+              ) : (
+                items.map((item, index) => (
+                  <motion.div
+                    key={item.sku}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    {/* Product Image */}
+                    <div className="w-20 h-20 flex-shrink-0 bg-white rounded-lg overflow-hidden border border-gray-200">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Product Details */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 line-clamp-2">
+                          {item.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {t("cart.sku")}: {item.sku}
+                        </p>
+                        <p className="text-lg font-bold text-gray-900 mt-1">
+                          ₹{item.price}
+                        </p>
+                      </div>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 w-fit">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() =>
+                            updateQuantity(item.sku, item.quantity - 1)
+                          }
+                          className="p-1 hover:bg-gray-100 transition-colors"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </motion.button>
+                        <span className="px-3 font-semibold min-w-[2rem] text-center">
+                          {item.quantity}
+                        </span>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() =>
+                            updateQuantity(item.sku, item.quantity + 1)
+                          }
+                          className="p-1 hover:bg-gray-100 transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </motion.button>
+                      </div>
+                    </div>
+
+                    {/* Remove Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => removeFromCart(item.sku)}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </motion.button>
+                  </motion.div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            {items.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="border-t border-gray-200 p-6 space-y-4"
+              >
+                {/* Total */}
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-semibold text-gray-900">
+                    {t("cart.total")}:
+                  </span>
+                  <span className="text-2xl font-bold text-gray-900">
+                    ₹{getTotalPrice().toFixed(2)}
+                  </span>
+                </div>
+
+                {/* Checkout Button */}
+                <Link href="/checkout/auth">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={closeCart}
+                    className="w-full py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+                  >
+                    {t("cart.checkout")}
+                  </motion.button>
+                </Link>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={closeCart}
+                  className="w-full py-3 border-2 border-gray-200 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                >
+                  {t("cart.continueShopping")}
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}

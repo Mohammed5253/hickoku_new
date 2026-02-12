@@ -1,0 +1,111 @@
+{
+  "common": {
+    "language": "العربية"
+  },
+  "navigation": {
+    "new": "جديد",
+    "forHer": "للنساء",
+    "forHim": "للرجال",
+    "collections": "المجموعات",
+    "search": "بحث..."
+  },
+  "hero": {
+    "silkMusk": {
+      "title": "حرير المسك",
+      "subtitle": "تجربة الأناقة الخالصة",
+      "description": "مزيج رقيق من الزهور البيضاء والمسك الناعم"
+    },
+    "midnightAgar": {
+      "title": "آجار منتصف الليل",
+      "subtitle": "احتضن الغموض",
+      "description": "نوتات خشبية عميقة مع لمسة من التوابل"
+    },
+    "shopNow": "تسوق الآن"
+  },
+  "footer": {
+    "brand": "HK",
+    "description": "صناعة العطور الفاخرة منذ عام 1990. اختبر فن الروائح.",
+    "shop": "تسوق",
+    "newArrivals": "الوصول الجديدة",
+    "bestSellers": "الأكثر مبيعاً",
+    "giftSets": "مجموعات الهدايا",
+    "support": "الدعم",
+    "contactUs": "اتصل بنا",
+    "shippingInfo": "معلومات الشحن",
+    "returns": "المرتجعات",
+    "faq": "الأسئلة الشائعة",
+    "legal": "القانوني",
+    "privacy": "سياسة الخصوصية",
+    "terms": "الشروط والأحكام"
+  },
+  "products": {
+    "viewAll": "عرض جميع المجموعة",
+    "addToCart": "أضف إلى السلة",
+    "viewDetails": "عرض التفاصيل"
+  },
+  "cart": {
+    "yourCart": "سلتك",
+    "emptyCart": "سلتك فارغة",
+    "addProducts": "أضف بعض المنتجات للبدء",
+    "sku": "رمز المنتج",
+    "total": "الإجمالي",
+    "subtotal": "المجموع الفرعي",
+    "checkout": "الدفع",
+    "continueShopping": "متابعة التسوق",
+    "removeItem": "إزالة"
+  },
+  "checkout": {
+    "title": "الدفع",
+    "address": "العنوان",
+    "shipping": "الشحن",
+    "payment": "الدفع",
+    "confirmation": "تأكيد الطلب",
+    "firstName": "الاسم الأول",
+    "lastName": "الاسم الأخير",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "addressLine1": "السطر الأول من العنوان",
+    "addressLine2": "السطر الثاني من العنوان",
+    "city": "المدينة",
+    "state": "الولاية",
+    "zipCode": "الرمز البريدي",
+    "country": "الدولة",
+    "standard": "عادي (₹100)",
+    "express": "سريع (₹300)",
+    "overnight": "بين عشية وضحاها (₹500)",
+    "paymentVerified": "تم التحقق من الدفع",
+    "continueToNextStep": "الانتقال إلى الخطوة التالية",
+    "placeOrder": "تقديم الطلب"
+  },
+  "orderConfirmation": {
+    "confirmed": "تم تأكيد الطلب!",
+    "thank_you": "شكراً على شرائك",
+    "orderReceived": "تم استلام طلبك وجاري معالجته",
+    "orderNumber": "رقم الطلب",
+    "checkEmail": "تحقق من بريدك الإلكتروني لتأكيد الطلب والتحديثات",
+    "orderStatus": "حالة الطلب",
+    "estimatedDelivery": "التسليم المتوقع",
+    "trackOrder": "تتبع الطلب",
+    "continueShop": "استمر في التسوق"
+  },
+  "productNames": {
+    "silkMusk": "حرير المسك",
+    "zafera": "زفيرة",
+    "midnightAgar": "آجار منتصف الليل",
+    "raafa": "رافة",
+    "velvira": "فيلفيرا",
+    "lumiflora": "لوميفلورا",
+    "nufra": "نوفرا",
+    "roselia": "روزيليا",
+    "blancaBloom": "بيانكا بلوم",
+    "azelia": "أزيليا",
+    "noctyra": "نوكتيرا",
+    "softVeil": "حجاب ناعم",
+    "elune": "إلون"
+  },
+  "messages": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "نجح"
+  }
+}

@@ -1,0 +1,156 @@
+"use client";
+
+import { motion } from "motion/react";
+import { Heart, ShoppingBag, Eye } from "lucide-react";
+import { useState } from "react";
+import { useCart } from "../hooks/useCart";
+
+interface ProductCardProps {
+  id: number;
+  name: string;
+  description: string;
+  highlight: string;
+  price: string;
+  image: string;
+  badge?: string;
+  category: "For Her" | "For Him";
+}
+
+export function ProductCard({
+  name,
+  description,
+  highlight,
+  price,
+  image,
+  badge,
+  category,
+  id,
+}: ProductCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const { addToCart } = useCart();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.5 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300"
+    >
+      {/* Image Container */}
+      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+        <motion.img
+          src={image}
+          alt={name}
+          className="w-full h-full object-cover"
+          animate={{ scale: isHovered ? 1.08 : 1 }}
+          transition={{ duration: 0.6 }}
+        />
+
+        {/* Badge */}
+        {badge && (
+          <div className="absolute top-4 left-4 z-10">
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="px-3 py-1 bg-white/95 backdrop-blur-sm rounded-full text-xs tracking-wider uppercase font-semibold"
+            >
+              {badge}
+            </motion.span>
+          </div>
+        )}
+
+        {/* Category Badge */}
+        <div className="absolute top-4 right-4 z-10">
+          <motion.span
+            initial={{ opacity: 0, x: 10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className={`px-3 py-1 rounded-full text-xs tracking-wider uppercase font-semibold ${
+              category === "For Her"
+                ? "bg-pink-100 text-pink-800"
+                : "bg-blue-100 text-blue-800"
+            }`}
+          >
+            {category}
+          </motion.span>
+        </div>
+
+        {/* Highlight - Overlay on Image */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-8 z-20 flex flex-col items-center justify-center"
+        >
+          <span className="text-4xl mb-2">✨</span>
+          <p className="text-white font-bold text-base text-center leading-relaxed">
+            {highlight}
+          </p>
+        </motion.div>
+
+        {/* Hover Actions */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          className="absolute inset-0 bg-black/10 flex items-center justify-center gap-3 z-20"
+        >
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsFavorited(!isFavorited)}
+            className={`p-3 rounded-full backdrop-blur-sm transition-colors ${
+              isFavorited
+                ? "bg-red-500 text-white"
+                : "bg-white/90 text-gray-900"
+            }`}
+          >
+            <Heart className={`w-5 h-5 ${isFavorited ? "fill-current" : ""}`} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="p-3 bg-white/90 backdrop-blur-sm rounded-full text-gray-900"
+          >
+            <Eye className="w-5 h-5" />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() =>
+              addToCart({
+                id,
+                name,
+                price,
+                image,
+                sku: `HICK-${String(id).padStart(3, "0")}`,
+              })
+            }
+            className="p-3 bg-gray-900 backdrop-blur-sm rounded-full text-white"
+          >
+            <ShoppingBag className="w-5 h-5" />
+          </motion.button>
+        </motion.div>
+      </div>
+
+      {/* Product Info */}
+      <div className="p-6">
+        <h3 className="text-xl font-bold mb-2">{name}</h3>
+        <p className="text-sm text-gray-600 mb-4 line-clamp-2">{description}</p>
+
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <p className="text-2xl font-bold text-gray-900">₹{price}</p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors"
+          >
+            Add to Cart
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}

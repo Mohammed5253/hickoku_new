@@ -1,0 +1,58 @@
+[
+  {
+    "image": "/hickoku-assets/midnight_agar-product.png",
+    "category": "For Him",
+    "price": "165",
+    "description": "The Secret of Midnight",
+    "id": "2",
+    "highlight": "Dark, Woody, Mysterious",
+    "name": "Midnight Agar"
+  },
+  {
+    "image": "/hickoku-assets/lumiflora-product.png",
+    "badge": "New",
+    "category": "For Her",
+    "price": "125",
+    "description": "The Symphony of Sunlight",
+    "id": "1",
+    "highlight": "Soft Rose, Airy, Elegant",
+    "name": "Lumiflora"
+  },
+  {
+    "image": "/hickoku-assets/velvira-product.png",
+    "category": "For Him",
+    "price": "115",
+    "description": "Fresh Aquatic Notes",
+    "id": "6",
+    "highlight": "White Musk, Clean, Soft Skin Scent",
+    "name": "Ocean Breeze"
+  },
+  {
+    "image": "/hickoku-assets/roselia-product.png",
+    "category": "For Her",
+    "price": "155",
+    "description": "Timeless Romance",
+    "id": "5",
+    "highlight": "Romantic, Musk, Floral",
+    "name": "Velvet Rose"
+  },
+  {
+    "image": "/hickoku-assets/raafa-product.png",
+    "badge": "Best Seller",
+    "category": "For Him",
+    "price": "145",
+    "description": "Sun-Kissed Citrus",
+    "id": "4",
+    "highlight": "Fresh, Sparkly, Clean",
+    "name": "Raafa"
+  },
+  {
+    "image": "/hickoku-assets/nufra-product.png",
+    "category": "For Her",
+    "price": "135",
+    "description": "Blossoms in the Breeze",
+    "id": "3",
+    "highlight": "White Floral, Rich, Feminine",
+    "name": "Nufra"
+  }
+]

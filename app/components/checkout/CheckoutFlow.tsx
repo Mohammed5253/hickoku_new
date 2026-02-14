@@ -27,7 +27,7 @@ export function CheckoutFlow() {
 
   const steps = [
     { id: "address", label: t("checkout.address"), icon: MapPin },
-    { id: "shipping", label: t("checkout.shipping"), icon: Truck },
+    // { id: "shipping", label: t("checkout.shipping"), icon: Truck }, // Shipping step hidden
     { id: "payment", label: t("checkout.payment"), icon: CreditCard },
   ];
 
@@ -169,7 +169,7 @@ export function CheckoutFlow() {
                     className="border-t-2 border-gray-200 p-6 bg-white"
                   >
                     {step.id === "address" && <AddressForm />}
-                    {step.id === "shipping" && <ShippingMethod />}
+                    {/* {step.id === "shipping" && <ShippingMethod />} */}
                     {step.id === "payment" && <RazorpayPayment />}
                   </motion.div>
                 )}

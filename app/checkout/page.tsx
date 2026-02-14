@@ -9,15 +9,16 @@ import { Header } from "../components/Header";
 import { useCart } from "../hooks/useCart";
 import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 
-function CartSummary() {
+function CartSummary({ defaultExpanded = true }: { defaultExpanded?: boolean }) {
   const { items, getTotalPrice, removeFromCart, updateQuantity } = useCart();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   if (items.length === 0) return null;
 
-  const subtotal = getTotalPrice();
-  const tax = Math.round(subtotal * 0.1 * 100) / 100; // 10% tax
-  const total = subtotal + tax;
+  const subtotal = getTotalPrice(); // in paise
+  const tax = Math.round(subtotal * 0.1); // 10% tax in paise
+  const deliveryCharge = 5000; // ₹50 in paise
+  const total = subtotal + tax + deliveryCharge;
 
   return (
     <motion.div
@@ -60,7 +61,7 @@ function CartSummary() {
                 <div className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-gray-200 flex-shrink-0">
                   <img
                     src={item.image}
-                    alt={item.name}
+                    alt={item.productName}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -68,9 +69,9 @@ function CartSummary() {
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900 truncate">
-                    {item.name}
+                    {item.productName}
                   </p>
-                  <p className="text-xs text-gray-600 mt-1">₹{item.price}</p>
+                  <p className="text-xs text-gray-600 mt-1">₹{(item.price / 100).toFixed(2)}</p>
 
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-2 mt-2 w-fit bg-white rounded border border-gray-300">
@@ -119,16 +120,20 @@ function CartSummary() {
           <div className="space-y-2 pb-3 border-b border-gray-200">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium">₹{subtotal.toFixed(2)}</span>
+              <span className="font-medium">₹{(subtotal / 100).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Tax (10%)</span>
-              <span className="font-medium">₹{tax.toFixed(2)}</span>
+              <span className="font-medium">₹{(tax / 100).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Delivery Charges</span>
+              <span className="font-medium">₹{(deliveryCharge / 100).toFixed(2)}</span>
             </div>
           </div>
           <div className="flex justify-between text-lg font-bold">
             <span>Total</span>
-            <span className="text-blue-600">₹{total.toFixed(2)}</span>
+            <span className="text-blue-600">₹{(total / 100).toFixed(2)}</span>
           </div>
         </div>
 
@@ -149,13 +154,7 @@ function CheckoutPageContent() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const userType = sessionStorage.getItem("userType");
-
-    if (!userType) {
-      router.push("/checkout/auth");
-      return;
-    }
-
+    // Auth check removed for simplified checkout flow
     setIsReady(true);
   }, [router]);
 
@@ -168,6 +167,11 @@ function CheckoutPageContent() {
       <Header />
       <div className="pt-20 bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Mobile Cart Summary - Show at top */}
+          <div className="lg:hidden mb-8">
+            <CartSummary defaultExpanded={false} />
+          </div>
+
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Main Checkout Flow */}
             <div className="lg:col-span-2">
@@ -178,11 +182,6 @@ function CheckoutPageContent() {
             <div className="hidden lg:block">
               <CartSummary />
             </div>
-          </div>
-
-          {/* Mobile Cart Summary */}
-          <div className="lg:hidden mt-8">
-            <CartSummary />
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ export function CartDrawer() {
     removeFromCart,
     updateQuantity,
     getTotalPrice,
+    stockWarnings,
   } = useCart();
   const { t } = useLocale();
 
@@ -50,6 +51,25 @@ export function CartDrawer() {
               </motion.button>
             </div>
 
+            {/* Stock Warnings */}
+            {stockWarnings && stockWarnings.length > 0 && (
+              <div className="px-6 py-3 bg-amber-50 border-b border-amber-200">
+                <div className="flex items-start gap-2">
+                  <span className="text-amber-600 text-sm">⚠️</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-amber-800 mb-1">
+                      Stock Alert
+                    </p>
+                    {stockWarnings.map((warning, idx) => (
+                      <p key={idx} className="text-xs text-amber-700">
+                        <strong>{warning.productName}:</strong> {warning.message}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {items.length === 0 ? (
@@ -77,7 +97,7 @@ export function CartDrawer() {
                     <div className="w-20 h-20 flex-shrink-0 bg-white rounded-lg overflow-hidden border border-gray-200">
                       <img
                         src={item.image}
-                        alt={item.name}
+                        alt={item.productName}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -86,13 +106,13 @@ export function CartDrawer() {
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
                         <h3 className="font-semibold text-gray-900 line-clamp-2">
-                          {item.name}
+                          {item.productName}
                         </h3>
                         <p className="text-xs text-gray-500 mt-1">
                           {t("cart.sku")}: {item.sku}
                         </p>
                         <p className="text-lg font-bold text-gray-900 mt-1">
-                          ₹{item.price}
+                          ₹{(item.price / 100).toFixed(2)}
                         </p>
                       </div>
 
@@ -151,12 +171,12 @@ export function CartDrawer() {
                     {t("cart.total")}:
                   </span>
                   <span className="text-2xl font-bold text-gray-900">
-                    ₹{getTotalPrice().toFixed(2)}
+                    ₹{(getTotalPrice() / 100).toFixed(2)}
                   </span>
                 </div>
 
                 {/* Checkout Button */}
-                <Link href="/checkout/auth">
+                <Link href="/checkout">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

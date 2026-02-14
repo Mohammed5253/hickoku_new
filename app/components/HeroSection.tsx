@@ -44,7 +44,7 @@ export function HeroSection() {
   const slide = heroSlides[currentSlide];
 
   return (
-    <section className="relative h-[600px] overflow-hidden mt-16">
+    <section className="relative h-[600px] overflow-hidden mt-16 sm:mt-20">
       <AnimatePresence mode="wait">
         <motion.div
           key={slide.id}

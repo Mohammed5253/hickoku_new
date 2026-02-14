@@ -10,9 +10,9 @@ export function Footer() {
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand */}
-          <div>
+          <div className="sm:col-span-2 lg:col-span-1">
             <h3 className="text-2xl mb-4 tracking-wider">
               {t("footer.brand")}
             </h3>
@@ -126,7 +126,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Company */}
+          {/* Legal */}
           <div>
             <h4 className="mb-4 tracking-wider uppercase text-sm">
               {t("footer.legal")}
@@ -165,6 +165,43 @@ export function Footer() {
                 </a>
               </li>
             </ul>
+          </div>
+
+          {/* Order Tracking */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h4 className="mb-4 tracking-wider uppercase text-sm">
+              Track Order
+            </h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Enter order ID to check status
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const orderId = formData.get('orderId') as string;
+                if (orderId.trim()) {
+                  window.location.href = `/order-tracking/${orderId.trim()}`;
+                }
+              }}
+              className="space-y-2"
+            >
+              <input
+                type="text"
+                name="orderId"
+                placeholder="Order ID"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Track
+              </motion.button>
+            </form>
           </div>
         </div>
 

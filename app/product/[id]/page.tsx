@@ -9,10 +9,27 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Header } from "../../components/Header";
 import { useCart } from "../../hooks/useCart";
+
+interface Product {
+  productId: string;
+  name: string;
+  description: string;
+  highlight: string;
+  category: string;
+  badge: string | null;
+  images: string[];
+  variant: {
+    sku: string;
+    size: string;
+    price: number;
+    stockQuantity: number;
+    stockStatus: string;
+  };
+}
 
 const productImages = [
   "https://images.unsplash.com/photo-1619007556336-4d99b008471e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZXJmdW1lJTIwaGVybyUyMGJhbm5lciUyMGVsZWdhbnR8ZW58MXx8fHwxNzcwNTQxNTI5fDA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -20,15 +37,31 @@ const productImages = [
   "https://images.unsplash.com/photo-1761937841527-fac9281e53fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaW5rJTIwZmxvcmFsJTIwcGVyZnVtZSUyMGZlbWluaW5lfGVufDF8fHx8MTc3MDU0MTUyOHww&ixlib=rb-4.1.0&q=80&w=1080",
 ];
 
-const sizes = ["30 ml", "50 ml", "80 ml", "100 ml"];
-
 export default function ProductDetailPage() {
   const params = useParams();
-  const id = params?.id;
+  const id = params?.id as string;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState("50 ml");
   const [activeTab, setActiveTab] = useState("description");
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const response = await fetch(`/api/products-enhanced/${id}`);
+        if (!response.ok) throw new Error('Product not found');
+        const data = await response.json();
+        setProduct(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (id) fetchProduct();
+  }, [id]);
 
   const nextImage = () => {
     setCurrentImage((prev) => (prev + 1) % productImages.length);
@@ -43,7 +76,7 @@ export default function ProductDetailPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 pt-16">
+      <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20">
         {/* Back button */}
         <div className="py-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,11 +102,19 @@ export default function ProductDetailPage() {
                 animate={{ opacity: 1 }}
                 className="relative aspect-[3/4] bg-white rounded-lg overflow-hidden shadow-md"
               >
-                <img
-                  src={productImages[currentImage]}
-                  alt="Product"
-                  className="w-full h-full object-cover"
-                />
+                {product && product.images && product.images.length > 0 ? (
+                  <img
+                    src={product.images[currentImage] || product.images[0]}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={productImages[currentImage]}
+                    alt="Product"
+                    className="w-full h-full object-cover"
+                  />
+                )}
 
                 {/* Navigation Arrows */}
                 <button
@@ -92,24 +133,45 @@ export default function ProductDetailPage() {
 
               {/* Thumbnail Gallery */}
               <div className="flex gap-4 overflow-x-auto pb-2">
-                {productImages.map((image, index) => (
-                  <motion.button
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    onClick={() => setCurrentImage(index)}
-                    className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
-                      currentImage === index
-                        ? "border-gray-900"
-                        : "border-gray-200"
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </motion.button>
-                ))}
+                {product && product.images && product.images.length > 1 ? (
+                  product.images.map((image, index) => (
+                    <motion.button
+                      key={index}
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => setCurrentImage(index)}
+                      className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                        currentImage === index
+                          ? "border-gray-900"
+                          : "border-gray-200"
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`${product.name} ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </motion.button>
+                  ))
+                ) : (
+                  productImages.map((image, index) => (
+                    <motion.button
+                      key={index}
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => setCurrentImage(index)}
+                      className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                        currentImage === index
+                          ? "border-gray-900"
+                          : "border-gray-200"
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </motion.button>
+                  ))
+                )}
               </div>
             </div>
 
@@ -120,33 +182,49 @@ export default function ProductDetailPage() {
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
-              {/* Title & Price */}
-              <div>
-                <h1 className="text-3xl mb-2">
-                  Hicksoku Velour - The Warmth of Pure Indulgence
-                </h1>
-                <p className="text-2xl text-gray-900">Rs. 3690</p>
-              </div>
+              {loading && <p className="text-gray-600">Loading...</p>}
+              {error && <p className="text-red-600">Error: {error}</p>}
+              
+              {product && (
+                <>
+                  {/* Title & Price */}
+                  <div>
+                    <h1 className="text-3xl mb-2">{product.name}</h1>
+                    <p className="text-sm text-gray-600 mb-2">{product.highlight}</p>
+                    <p className="text-2xl text-gray-900">
+                      Rs. {(product.variant.price / 100).toFixed(0)}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Size: {product.variant.size}
+                    </p>
+                  </div>
 
               {/* Size Selection */}
               <div>
-                <h3 className="text-sm mb-3">Size</h3>
+                <h3 className="text-sm font-semibold mb-3">Size</h3>
                 <div className="grid grid-cols-4 gap-3">
-                  {sizes.map((size) => (
-                    <motion.button
-                      key={size}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setSelectedSize(size)}
-                      className={`py-3 rounded-lg border-2 transition-all text-sm ${
-                        selectedSize === size
-                          ? "border-gray-900 bg-gray-900 text-white"
-                          : "border-gray-300 hover:border-gray-400"
-                      }`}
-                    >
-                      {size}
-                    </motion.button>
-                  ))}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="py-3 rounded-lg border-2 border-gray-900 bg-gray-900 text-white transition-all text-sm font-medium"
+                  >
+                    {product.variant.size}
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Stock Status */}
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    product.variant.stockStatus === 'in_stock' ? 'bg-green-500' : 'bg-red-500'
+                  }`} />
+                  <p className="text-sm text-gray-600">
+                    {product.variant.stockStatus === 'in_stock' 
+                      ? `In Stock (${product.variant.stockQuantity} available)` 
+                      : 'Out of Stock'
+                    }
+                  </p>
                 </div>
               </div>
 
@@ -163,28 +241,34 @@ export default function ProductDetailPage() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    const productName =
-                      "Hicksoku Velour - The Warmth of Pure Indulgence";
-                    const productPrice = "3690";
-                    const productImage = productImages[currentImage];
-                    const sku = `HICK-${String(id).padStart(3, "0")}-${selectedSize.split(" ")[0]}`;
+                  onClick={async () => {
+                    if (product.variant.stockStatus !== 'in_stock') {
+                      toast.error('Out of stock');
+                      return;
+                    }
 
-                    addToCart({
-                      id: Number(id),
-                      name: `${productName} (${selectedSize})`,
-                      price: productPrice,
-                      image: productImage,
-                      sku: sku,
-                    });
+                    try {
+                      await addToCart({
+                        sku: product.variant.sku,
+                        productId: product.productId,
+                        productName: product.name,
+                        size: product.variant.size,
+                        price: product.variant.price,
+                        quantity: 1,
+                        image: product.images[0],
+                      });
 
-                    toast.success("Added to cart!", {
-                      description: `${selectedSize} size selected`,
-                    });
+                      toast.success("Added to cart!", {
+                        description: `${product.variant.size} - Rs. ${(product.variant.price / 100).toFixed(0)}`,
+                      });
+                    } catch (error: any) {
+                      toast.error(error.message || 'Failed to add to cart');
+                    }
                   }}
-                  className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={product.variant.stockStatus !== 'in_stock'}
+                  className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  ADD TO CART
+                  {product.variant.stockStatus === 'in_stock' ? 'ADD TO CART' : 'OUT OF STOCK'}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -292,6 +376,8 @@ export default function ProductDetailPage() {
                   )}
                 </div>
               </div>
+                </>
+              )}
             </motion.div>
           </div>
         </div>

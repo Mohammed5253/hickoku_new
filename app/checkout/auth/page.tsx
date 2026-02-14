@@ -65,9 +65,9 @@ export default function AuthPage() {
           </motion.div>
 
           {/* Two Column Layout */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-1 gap-8 max-w-4xl mx-auto">
             {/* Sign In Option */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -97,7 +97,7 @@ export default function AuthPage() {
                   </div>
                 </div>
               </button>
-            </motion.div>
+            </motion.div> */}
 
             {/* Guest Checkout Option */}
             <motion.div

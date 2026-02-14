@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Header } from "../../components/Header";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   CheckCircle2,
   Package,
@@ -11,46 +12,85 @@ import {
   Phone,
   Clock,
   ArrowLeft,
+  Loader,
 } from "lucide-react";
+import { Order } from "@/lib/repositories/orderRepository";
 
 export default function OrderTrackingPage() {
   const params = useParams();
   const router = useRouter();
   const orderId = params.id as string;
 
-  // Mock order data - in real app, this would come from API using orderId
-  const mockOrder = {
-    orderId: orderId,
-    status: "processing", // pending, processing, shipped, delivered
-    estimatedDelivery: new Date(
-      Date.now() + 2 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    tracking: [
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!orderId) {
+      setError("No order ID provided");
+      setLoading(false);
+      return;
+    }
+
+    // Fetch order details from API
+    fetch(`/api/orders/${orderId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch order");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          setOrder(data.order);
+        } else {
+          setError("Order not found");
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching order:", err);
+        setError("Failed to load order details");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [orderId]);
+
+  // Generate tracking timeline based on order status
+  const getTrackingTimeline = (order: Order) => {
+    const timeline = [
       {
         step: "Order Confirmed",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        completed: true,
+        timestamp: order.confirmedAt || order.createdAt,
+        completed: ["confirmed", "processing", "shipped", "delivered"].includes(order.status),
         description: "Your order has been confirmed",
       },
       {
         step: "Processing",
-        timestamp: new Date(Date.now()).toISOString(),
-        completed: true,
+        timestamp: order.updatedAt,
+        completed: ["processing", "shipped", "delivered"].includes(order.status),
         description: "We are preparing your order",
       },
       {
         step: "Shipped",
-        timestamp: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
-        completed: false,
+        timestamp: order.updatedAt,
+        completed: ["shipped", "delivered"].includes(order.status),
         description: "Your order is on the way",
       },
       {
         step: "Delivered",
-        timestamp: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-        completed: false,
+        timestamp: order.updatedAt,
+        completed: order.status === "delivered",
         description: "Your order has been delivered",
       },
-    ],
+    ];
+    return timeline;
+  };
+
+  // Calculate estimated delivery (2 days from order creation)
+  const getEstimatedDelivery = (createdAt: string) => {
+    const orderDate = new Date(createdAt);
+    const deliveryDate = new Date(orderDate);
+    deliveryDate.setDate(deliveryDate.getDate() + 2);
+    return deliveryDate.toISOString();
   };
 
   const getStatusColor = (status: string) => {
@@ -58,6 +98,7 @@ export default function OrderTrackingPage() {
       case "pending":
         return "bg-yellow-50 border-yellow-200";
       case "processing":
+      case "confirmed":
         return "bg-blue-50 border-blue-200";
       case "shipped":
         return "bg-purple-50 border-purple-200";
@@ -72,6 +113,7 @@ export default function OrderTrackingPage() {
     switch (status) {
       case "pending":
         return "Order Pending";
+      case "confirmed":
       case "processing":
         return "Processing Your Order";
       case "shipped":
@@ -82,6 +124,42 @@ export default function OrderTrackingPage() {
         return "Order Status Unknown";
     }
   };
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="pt-20 bg-gray-50 min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <Loader className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading order details...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <>
+        <Header />
+        <div className="pt-20 bg-gray-50 min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">{error || "Order not found"}</p>
+            <button
+              onClick={() => router.push("/")}
+              className="text-blue-600 hover:underline"
+            >
+              Return to Home
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const trackingTimeline = getTrackingTimeline(order);
+  const estimatedDelivery = getEstimatedDelivery(order.createdAt);
 
   return (
     <>
@@ -106,7 +184,7 @@ export default function OrderTrackingPage() {
                 <h1 className="text-3xl font-bold text-gray-900">
                   Track Your Order
                 </h1>
-                <p className="text-gray-600 mt-2">Order ID: {orderId}</p>
+                <p className="text-gray-600 mt-2">Order #{order.orderNumber}</p>
               </div>
             </div>
           </motion.div>
@@ -116,7 +194,7 @@ export default function OrderTrackingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className={`p-8 rounded-xl border-2 mb-8 ${getStatusColor(mockOrder.status)}`}
+            className={`p-8 rounded-xl border-2 mb-8 ${getStatusColor(order.status)}`}
           >
             <div className="flex items-start gap-4">
               <motion.div
@@ -124,9 +202,9 @@ export default function OrderTrackingPage() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="flex-shrink-0"
               >
-                {mockOrder.status === "delivered" ? (
+                {order.status === "delivered" ? (
                   <CheckCircle2 className="w-10 h-10 text-green-600" />
-                ) : mockOrder.status === "shipped" ? (
+                ) : order.status === "shipped" ? (
                   <Truck className="w-10 h-10 text-purple-600" />
                 ) : (
                   <Package className="w-10 h-10 text-blue-600" />
@@ -134,13 +212,13 @@ export default function OrderTrackingPage() {
               </motion.div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {getStatusMessage(mockOrder.status)}
+                  {getStatusMessage(order.status)}
                 </h2>
                 <p className="text-gray-600 mt-2">
-                  {mockOrder.status === "delivered"
+                  {order.status === "delivered"
                     ? "Your order has been successfully delivered"
                     : `Estimated delivery: ${new Date(
-                        mockOrder.estimatedDelivery,
+                        estimatedDelivery,
                       ).toLocaleDateString("en-US", {
                         weekday: "long",
                         month: "long",
@@ -175,7 +253,7 @@ export default function OrderTrackingPage() {
 
               {/* Timeline Items */}
               <div className="grid grid-cols-4 gap-6 relative">
-                {mockOrder.tracking.map((event, index) => (
+                {trackingTimeline.map((event, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
@@ -216,7 +294,7 @@ export default function OrderTrackingPage() {
                           event.completed ? "text-green-600" : "text-gray-500"
                         }`}
                       >
-                        {new Date(event.timestamp).toLocaleDateString("en-US", {
+                        {event.timestamp && new Date(event.timestamp).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                         })}
@@ -246,7 +324,7 @@ export default function OrderTrackingPage() {
                 </h3>
               </div>
               <p className="text-2xl font-bold text-gray-900">
-                {new Date(mockOrder.estimatedDelivery).toLocaleDateString(
+                {new Date(estimatedDelivery).toLocaleDateString(
                   "en-US",
                   {
                     weekday: "short",

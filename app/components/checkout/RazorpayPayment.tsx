@@ -24,34 +24,130 @@ export function RazorpayPayment() {
 
   const { state, dispatch } = context;
 
-  const cartTotal = getTotalPrice();
-  const shippingCost = state.shippingCost || 0;
-  const totalAmount = (cartTotal + shippingCost) * 100; // Convert to paise for Razorpay
+  const subtotal = getTotalPrice();
+  const tax = Math.round(subtotal * 0.1); // 10% tax in paise
+  const shippingCost = state.shippingCost || 5000; // ₹50 in paise
+  const total = subtotal + tax + shippingCost;
 
   const handlePayment = async () => {
     if (typeof window === "undefined") return;
 
     setIsProcessing(true);
 
-    // Simulate payment processing for 10ms
-    setTimeout(() => {
-      toast.success("Payment successful!", {
-        description: "Order has been placed successfully",
+    try {
+      // Step 1: Create order in our database and get Razorpay order ID
+      const createOrderResponse = await fetch("/api/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerEmail: state.address.email,
+          customerFirstName: state.address.firstName,
+          customerLastName: state.address.lastName,
+          customerPhone: state.address.phone,
+          shippingAddress: state.address,
+          items: items.map((item) => ({
+            sku: item.sku,
+            productId: item.productId,
+            productName: item.productName,
+            size: item.size,
+            quantity: item.quantity,
+            price: item.price,
+            image: item.image,
+            total: item.price * item.quantity,
+          })),
+          subtotal,
+          tax,
+          shippingCost,
+          total,
+        }),
       });
 
-      // Generate order ID (format: ORD-TIMESTAMP-RANDOM)
-      const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      if (!createOrderResponse.ok) {
+        throw new Error("Failed to create order");
+      }
 
-      // Mark payment as completed
-      dispatch({ type: "MARK_STEP_COMPLETED", payload: "payment" });
+      const orderData = await createOrderResponse.json();
 
-      // Clear cart
-      clearCart();
+      // Step 2: Open Razorpay checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: total,
+        currency: "INR",
+        name: "Hickoku Perfumes",
+        description: `Order ${orderData.orderNumber}`,
+        order_id: orderData.razorpayOrderId,
+        prefill: {
+          name: `${state.address.firstName} ${state.address.lastName}`,
+          email: state.address.email,
+          contact: state.address.phone,
+        },
+        theme: {
+          color: "#2563eb",
+        },
+        handler: async function (response: any) {
+          // Step 3: Verify payment
+          try {
+            const verifyResponse = await fetch("/api/orders/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: orderData.orderId,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
 
-      // Redirect to order confirmation page
+            if (!verifyResponse.ok) {
+              throw new Error("Payment verification failed");
+            }
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              // Payment successful
+              toast.success("Payment successful!", {
+                description: "Your order has been confirmed",
+              });
+
+              // Mark payment step as completed
+              dispatch({ type: "MARK_STEP_COMPLETED", payload: "payment" });
+
+              // Clear cart
+              await clearCart();
+
+              // Redirect to confirmation page
+              router.push(`/checkout/confirmation?orderId=${orderData.orderId}`);
+            } else {
+              throw new Error("Payment verification failed");
+            }
+          } catch (error) {
+            console.error("Payment verification error:", error);
+            toast.error("Payment verification failed", {
+              description: "Please contact support",
+            });
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+            toast.error("Payment cancelled", {
+              description: "You can try again when ready",
+            });
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Failed to initiate payment", {
+        description: "Please try again",
+      });
       setIsProcessing(false);
-      router.push(`/checkout/confirmation?orderId=${orderId}`);
-    }, 10);
+    }
   };
 
   return (
@@ -69,7 +165,7 @@ export function RazorpayPayment() {
         whileTap={{ scale: 0.98 }}
         onClick={handlePayment}
         disabled={isProcessing}
-        className="w-full p-6 border-2 border-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-all text-left mb-6"
+        className="w-full p-6 border-2 border-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-all text-left mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center">
@@ -83,7 +179,7 @@ export function RazorpayPayment() {
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-600">Click to pay</p>
-            <p className="font-semibold">₹{totalAmount / 100}</p>
+            <p className="font-semibold">₹{(total / 100).toFixed(2)}</p>
           </div>
         </div>
       </motion.button>
@@ -100,7 +196,7 @@ export function RazorpayPayment() {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => dispatch({ type: "SET_STEP", payload: "shipping" })}
+          onClick={() => dispatch({ type: "SET_STEP", payload: "address" })}
           disabled={isProcessing}
           className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors font-medium"
         >
@@ -121,7 +217,7 @@ export function RazorpayPayment() {
           ) : (
             <>
               <CreditCard className="w-4 h-4" />
-              Pay ₹{totalAmount / 100}
+              Pay ₹{(total / 100).toFixed(2)}
             </>
           )}
         </motion.button>

@@ -38,22 +38,22 @@ export async function getAllProducts({ category, name }: { category?: string; na
   // For now, use Scan with filter expressions (not efficient for large tables)
   const filterExpressions: string[] = [];
   const expressionAttributeValues: Record<string, any> = {};
+  const expressionAttributeNames: Record<string, string> = {};
 
   if (category) {
     filterExpressions.push('#category = :category');
     expressionAttributeValues[':category'] = { S: category };
+    expressionAttributeNames['#category'] = 'category';
   }
   if (name) {
     filterExpressions.push('contains (LOWER(#name), :name)');
     expressionAttributeValues[':name'] = { S: name.toLowerCase() };
+    expressionAttributeNames['#name'] = 'name';
   }
   if (filterExpressions.length > 0) {
     params.FilterExpression = filterExpressions.join(' AND ');
     params.ExpressionAttributeValues = expressionAttributeValues;
-    params.ExpressionAttributeNames = {
-      '#category': 'category',
-      '#name': 'name',
-    };
+    params.ExpressionAttributeNames = expressionAttributeNames;
   }
 
   const command = new ScanCommand(params);

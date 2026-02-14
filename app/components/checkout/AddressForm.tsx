@@ -52,7 +52,7 @@ export function AddressForm() {
   const handleContinue = () => {
     if (validateForm()) {
       dispatch({ type: "MARK_STEP_COMPLETED", payload: "address" });
-      dispatch({ type: "SET_STEP", payload: "shipping" });
+      dispatch({ type: "SET_STEP", payload: "payment" });
     }
   };
 
@@ -82,6 +82,30 @@ export function AddressForm() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-8 space-y-6">
+        {/* Email - Moved to top */}
+        <div>
+          <label className="block text-sm font-medium text-gray-900 mb-2">
+            Email Address
+          </label>
+          <input
+            type="email"
+            value={state.address.email || ""}
+            onChange={(e) => handleAddressChange("email", e.target.value)}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            }`}
+            placeholder="For order confirmation"
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+          )}
+        </div>
+
+        {/* Separator */}
+        <div className="border-t border-gray-100 pt-4">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Shipping Address</h3>
+        </div>
+
         {/* First Row - Name */}
         <div className="grid md:grid-cols-2 gap-6">
           {formFields.slice(0, 2).map((field) => (
@@ -111,33 +135,22 @@ export function AddressForm() {
           ))}
         </div>
 
-        {/* Email & Phone */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {formFields.slice(2, 4).map((field) => (
-            <div key={field.key}>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                {field.label}
-              </label>
-              <input
-                type={field.type}
-                value={
-                  state.address[field.key as keyof typeof state.address] || ""
-                }
-                onChange={(e) =>
-                  handleAddressChange(
-                    field.key as keyof typeof state.address,
-                    e.target.value,
-                  )
-                }
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors[field.key] ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors[field.key] && (
-                <p className="text-sm text-red-500 mt-1">{errors[field.key]}</p>
-              )}
-            </div>
-          ))}
+        {/* Phone */}
+        <div>
+          <label className="block text-sm font-medium text-gray-900 mb-2">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            value={state.address.phone || ""}
+            onChange={(e) => handleAddressChange("phone", e.target.value)}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.phone ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {errors.phone && (
+            <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
+          )}
         </div>
 
         {/* Street */}
@@ -221,7 +234,7 @@ export function AddressForm() {
             onClick={handleContinue}
             className="ml-auto px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
           >
-            Continue to Shipping <ArrowRight className="w-4 h-4" />
+            Continue to Payment <ArrowRight className="w-4 h-4" />
           </motion.button>
         </div>
       </div>

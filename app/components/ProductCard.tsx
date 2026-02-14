@@ -121,11 +121,13 @@ export function ProductCard({
             whileTap={{ scale: 0.9 }}
             onClick={() =>
               addToCart({
-                id,
-                name,
-                price,
+                productId: String(id).padStart(3, "0"),
+                productName: name,
+                price: Number(price.replace(/[^0-9.]/g, "")),
                 image,
                 sku: `HICK-${String(id).padStart(3, "0")}`,
+                size: "Standard",
+                quantity: 1,
               })
             }
             className="p-3 bg-gray-900 backdrop-blur-sm rounded-full text-white"

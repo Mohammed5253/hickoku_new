@@ -48,6 +48,7 @@ export function RazorpayPayment() {
           items: items.map((item) => ({
             sku: item.sku,
             productId: item.productId,
+            variantId: item.variantId,
             productName: item.productName,
             size: item.size,
             quantity: item.quantity,

@@ -3,6 +3,8 @@
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
 
 export interface CartItem {
+  id?: string; // Optional internal ID
+  variantId: string; // Critical for new schema
   sku: string;
   productId: string;
   productName: string;

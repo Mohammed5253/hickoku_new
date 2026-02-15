@@ -16,6 +16,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 export interface CartItem {
     sku: string;
     productId: string;
+    variantId: string; // Added
     productName: string;
     size: string;
     price: number;
@@ -37,7 +38,7 @@ export interface Cart {
 export async function getCart(sessionId: string): Promise<Cart> {
     try {
         const queryCommand = new QueryCommand({
-            TableName: 'cart',
+            TableName: 'cart', // Ensure this matches .env or standard name
             KeyConditionExpression: 'PK = :pk',
             ExpressionAttributeValues: {
                 ':pk': `CART#${sessionId}`,
@@ -48,6 +49,7 @@ export async function getCart(sessionId: string): Promise<Cart> {
         const items: CartItem[] = (response.Items || []).map((item) => ({
             sku: item.sku,
             productId: item.productId,
+            variantId: item.variantId || `${item.productId}01`, // Fallback for legacy items
             productName: item.productName,
             size: item.size,
             price: item.price,
@@ -79,6 +81,7 @@ export async function addToCart(
     item: {
         sku: string;
         productId: string;
+        variantId: string;
         productName: string;
         size: string;
         price: number;
@@ -98,19 +101,34 @@ export async function addToCart(
             throw new Error('Product not found');
         }
 
+        // Find the specific variant
+        const variant = product.variants.find(v => v.id === item.variantId);
+        if (!variant) {
+            throw new Error('Variant not found');
+        }
+
         // Check stock
-        if (product.variant.stockStatus !== 'in_stock') {
+        if (variant.inventoryStatus !== 'IN_STOCK' && variant.inventoryStatus !== 'in_stock') {
+            // Handle both cases because migration uses IN_STOCK (from string?) or boolean?
+            // My migration script used IN_STOCK. Old code used in_stock.
+            // Let's accept both for robustness.
+            // Actually, `ProductVariant` interface says `inventoryStatus: string`.
             throw new Error('Product is out of stock');
         }
 
         // Get existing cart to check current quantity
         const currentCart = await getCart(sessionId);
+        // Identify item by SKU (assuming SKU is unique per variant) OR by VariantID
+        // Architecture doc says "cart/orders will always reference variantId".
+        // But `CartItem` uses SKU as SK in DynamoDB `ITEM#${sku}`.
+        // So we stick to SKU for uniqueness in Cart?
+        // Yes, SKU should be unique.
         const existingItem = currentCart.items.find((i) => i.sku === item.sku);
         const newQuantity = existingItem ? existingItem.quantity + item.quantity : item.quantity;
 
         // Validate total quantity doesn't exceed stock
-        if (newQuantity > product.variant.stockQuantity) {
-            throw new Error(`Only ${product.variant.stockQuantity} items available in stock`);
+        if (newQuantity > variant.stock) {
+            throw new Error(`Only ${variant.stock} items available in stock`);
         }
 
         // Validate total quantity doesn't exceed max per item
@@ -119,7 +137,7 @@ export async function addToCart(
         }
 
         // Use current product price (not the price from request)
-        const currentPrice = product.variant.price;
+        const currentPrice = variant.price;
 
         const putCommand = new PutCommand({
             TableName: 'cart',
@@ -128,6 +146,7 @@ export async function addToCart(
                 SK: `ITEM#${item.sku}`,
                 sku: item.sku,
                 productId: item.productId,
+                variantId: item.variantId,
                 productName: item.productName,
                 size: item.size,
                 price: currentPrice,
@@ -148,6 +167,9 @@ export async function addToCart(
     }
 }
 
+/**
+ * Update item quantity in cart
+ */
 /**
  * Update item quantity in cart
  */
@@ -176,8 +198,17 @@ export async function updateQuantity(
             throw new Error('Product not found');
         }
 
-        if (quantity > product.variant.stockQuantity) {
-            throw new Error(`Only ${product.variant.stockQuantity} items available in stock`);
+        // Find the specific variant
+        // Fallback to searching by SKU if variantId is missing (legacy items)
+        const variant = product.variants.find(v => v.id === item.variantId) ||
+            product.variants.find(v => v.sku === sku);
+
+        if (!variant) {
+            throw new Error('Variant not found');
+        }
+
+        if (quantity > variant.stock) {
+            throw new Error(`Only ${variant.stock} items available in stock`);
         }
 
         const putCommand = new PutCommand({
@@ -187,6 +218,7 @@ export async function updateQuantity(
                 SK: `ITEM#${sku}`,
                 sku: item.sku,
                 productId: item.productId,
+                variantId: item.variantId || variant.id, // Update if missing
                 productName: item.productName,
                 size: item.size,
                 price: item.price,

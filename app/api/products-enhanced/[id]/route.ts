@@ -13,8 +13,8 @@ export async function GET(
     try {
         const { id } = await context.params;
 
-        // Pad ID to 3 digits
-        const productId = id.padStart(3, '0');
+        // Opaque ID: Pass directly
+        const productId = id;
 
         const product = await getProductWithVariant(productId);
 

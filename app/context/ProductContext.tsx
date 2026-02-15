@@ -10,7 +10,7 @@ import React, {
 
 // 1. Define the Product structure
 interface Product {
-  id: number;
+  id: string; // Changed to string
   category: "For Her" | "For Him";
   name: string;
   description: string;
@@ -18,6 +18,7 @@ interface Product {
   price: string;
   image: string;
   badge?: string;
+  defaultVariantId?: string; // Added for cart
 }
 
 // 2. Define what the context will provide
@@ -38,10 +39,24 @@ export function ProductProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch("/api/products"); // Calls the API you just built!
+        const response = await fetch("/api/products-enhanced"); // Fetch from new API
         if (!response.ok) throw new Error("Failed to fetch");
-        const data = await response.json();
-        setProducts(data);
+        const data: any[] = await response.json();
+        
+        // Map Enhanced Product to Simple Product for Context
+        const mappedProducts: Product[] = data.map((p) => ({
+          id: p.id,
+          category: p.category as "For Her" | "For Him",
+          name: p.name,
+          description: p.description,
+          highlight: p.highlight,
+          price: String(p.basePrice || p.variants?.[0]?.price || 0),
+          image: p.images?.[0] || "",
+          badge: p.badge,
+          defaultVariantId: p.variants?.[0]?.id || `${p.id}01`
+        }));
+        
+        setProducts(mappedProducts);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {

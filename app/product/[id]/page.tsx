@@ -15,20 +15,22 @@ import { Header } from "../../components/Header";
 import { useCart } from "../../hooks/useCart";
 
 interface Product {
-  productId: string;
+  id: string; // Changed from productId
   name: string;
   description: string;
   highlight: string;
   category: string;
   badge: string | null;
   images: string[];
-  variant: {
+  basePrice: number;
+  variants: {
+    id: string;
     sku: string;
     size: string;
     price: number;
-    stockQuantity: number;
-    stockStatus: string;
-  };
+    stock: number;
+    inventoryStatus: string;
+  }[];
 }
 
 const productImages = [
@@ -192,10 +194,10 @@ export default function ProductDetailPage() {
                     <h1 className="text-3xl mb-2">{product.name}</h1>
                     <p className="text-sm text-gray-600 mb-2">{product.highlight}</p>
                     <p className="text-2xl text-gray-900">
-                      Rs. {(product.variant.price / 100).toFixed(0)}
+                      Rs. {(product.variants[0].price / 100).toFixed(0)}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      Size: {product.variant.size}
+                      Size: {product.variants[0].size}
                     </p>
                   </div>
 
@@ -208,7 +210,7 @@ export default function ProductDetailPage() {
                     whileTap={{ scale: 0.95 }}
                     className="py-3 rounded-lg border-2 border-gray-900 bg-gray-900 text-white transition-all text-sm font-medium"
                   >
-                    {product.variant.size}
+                    {product.variants[0].size}
                   </motion.button>
                 </div>
               </div>
@@ -217,11 +219,11 @@ export default function ProductDetailPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${
-                    product.variant.stockStatus === 'in_stock' ? 'bg-green-500' : 'bg-red-500'
+                    product.variants[0].inventoryStatus === 'IN_STOCK' ? 'bg-green-500' : 'bg-red-500'
                   }`} />
                   <p className="text-sm text-gray-600">
-                    {product.variant.stockStatus === 'in_stock' 
-                      ? `In Stock (${product.variant.stockQuantity} available)` 
+                    {product.variants[0].inventoryStatus === 'IN_STOCK' 
+                      ? `In Stock (${product.variants[0].stock} available)` 
                       : 'Out of Stock'
                     }
                   </p>
@@ -242,33 +244,35 @@ export default function ProductDetailPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={async () => {
-                    if (product.variant.stockStatus !== 'in_stock') {
+                    const variant = product.variants[0];
+                    if (variant.inventoryStatus !== 'IN_STOCK') {
                       toast.error('Out of stock');
                       return;
                     }
 
                     try {
                       await addToCart({
-                        sku: product.variant.sku,
-                        productId: product.productId,
+                        sku: variant.sku,
+                        productId: product.id,
+                        variantId: variant.id, 
                         productName: product.name,
-                        size: product.variant.size,
-                        price: product.variant.price,
+                        size: variant.size,
+                        price: variant.price,
                         quantity: 1,
                         image: product.images[0],
                       });
 
                       toast.success("Added to cart!", {
-                        description: `${product.variant.size} - Rs. ${(product.variant.price / 100).toFixed(0)}`,
+                        description: `${variant.size} - Rs. ${(variant.price / 100).toFixed(0)}`,
                       });
                     } catch (error: any) {
                       toast.error(error.message || 'Failed to add to cart');
                     }
                   }}
-                  disabled={product.variant.stockStatus !== 'in_stock'}
+                  disabled={product.variants[0].inventoryStatus !== 'IN_STOCK'}
                   className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {product.variant.stockStatus === 'in_stock' ? 'ADD TO CART' : 'OUT OF STOCK'}
+                  {product.variants[0].inventoryStatus === 'IN_STOCK' ? 'ADD TO CART' : 'OUT OF STOCK'}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.02 }}

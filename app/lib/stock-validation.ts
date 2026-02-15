@@ -26,8 +26,21 @@ export async function validateCartItemStock(
             };
         }
 
-        const inStock = product.variant.stockStatus === 'in_stock';
-        const availableQuantity = product.variant.stockQuantity;
+        const variant = product.variants.find(v => v.id === item.variantId);
+
+        if (!variant) {
+            return {
+                isValid: false,
+                availableQuantity: 0,
+                requestedQuantity: item.quantity,
+                inStock: false,
+            };
+        }
+
+        // Check stock status (handling both migration string and potential future enum)
+        const isInventoryInStock = variant.inventoryStatus === 'IN_STOCK' || variant.inventoryStatus === 'in_stock';
+        const inStock = isInventoryInStock && variant.stock > 0;
+        const availableQuantity = variant.stock;
         const requestedQuantity = item.quantity;
 
         return {

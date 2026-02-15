@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useCart } from "../hooks/useCart";
 
 interface ProductCardProps {
-  id: number;
+  id: string; // Changed to string
   name: string;
   description: string;
   highlight: string;
@@ -14,6 +14,7 @@ interface ProductCardProps {
   image: string;
   badge?: string;
   category: "For Her" | "For Him";
+  defaultVariantId?: string; // New prop
 }
 
 export function ProductCard({
@@ -25,6 +26,7 @@ export function ProductCard({
   badge,
   category,
   id,
+  defaultVariantId, // Added
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -121,11 +123,12 @@ export function ProductCard({
             whileTap={{ scale: 0.9 }}
             onClick={() =>
               addToCart({
-                productId: String(id).padStart(3, "0"),
+                productId: id,
+                variantId: defaultVariantId || `${id}01`,
                 productName: name,
                 price: Number(price.replace(/[^0-9.]/g, "")),
                 image,
-                sku: `HICK-${String(id).padStart(3, "0")}`,
+                sku: `HICK-${id}`,
                 size: "Standard",
                 quantity: 1,
               })

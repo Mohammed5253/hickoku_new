@@ -1,5 +1,7 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import { orderRepository } from "@/lib/repositories/orderRepository";
+import { updateStock } from "@/app/repositories/products.repository";
 import crypto from "crypto";
 
 interface VerifyPaymentRequest {
@@ -54,8 +56,25 @@ export async function POST(request: NextRequest) {
             confirmedAt: now,
         });
 
-        // Get updated order
+        // Get updated order to process items
         const order = await orderRepository.getOrder(body.orderId);
+
+        // Deduct Stock
+        if (order && order.items) {
+            for (const item of order.items) {
+                try {
+                    if (item.variantId) {
+                        await updateStock(item.variantId, item.quantity);
+                    } else {
+                        console.warn(`Skipping stock update for item ${item.sku} - no variantId`);
+                    }
+                } catch (error) {
+                    console.error(`Failed to update stock for variant ${item.variantId}:`, error);
+                    // Continue with other items, don't fail the request.
+                    // Ideally we should alert admin or flag the order.
+                }
+            }
+        }
 
         return NextResponse.json({
             success: true,

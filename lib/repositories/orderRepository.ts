@@ -16,11 +16,14 @@ const client = new DynamoDBClient({
 });
 
 const docClient = DynamoDBDocumentClient.from(client);
-const TABLE_NAME = process.env.DYNAMODB_ORDERS_TABLE || "hickoku-orders";
+const TABLE_NAME = process.env.DYNAMODB_ORDERS_TABLE || "orders";
+
+
 
 export interface OrderItem {
     sku: string;
     productId: string;
+    variantId: string; // Added to support tracking specific variants
     productName: string;
     size: string;
     quantity: number;

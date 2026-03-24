@@ -56,7 +56,7 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: 400 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 h-screen w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
+            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -206,26 +206,20 @@ export function CartDrawer() {
                 </div>
 
                 {/* Checkout Button */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    closeCart();
-                    router.push("/checkout");
-                  }}
-                  className="w-full py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+                <Link
+                  href="/checkout"
+                  onClick={closeCart}
+                  className="block w-full py-3 bg-gray-900 text-white text-center rounded-lg font-semibold hover:bg-gray-800 transition-all active:scale-[0.98]"
                 >
                   {t("cart.checkout")}
-                </motion.button>
+                </Link>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={closeCart}
-                  className="w-full py-3 border-2 border-gray-200 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  className="block w-full py-3 border-2 border-gray-200 text-gray-900 text-center rounded-lg font-semibold hover:bg-gray-50 transition-all active:scale-[0.98]"
                 >
                   {t("cart.continueShopping")}
-                </motion.button>
+                </button>
               </motion.div>
             )}
           </motion.div>

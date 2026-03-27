@@ -34,7 +34,7 @@ export function ProductGrid() {
         </p>
 
         {/* Filter Tabs */}
-        <div className="flex justify-center gap-4 mt-8">
+        {/* <div className="flex justify-center gap-4 mt-8">
           {(["All", "For Her", "For Him"] as const).map((tab) => (
             <motion.button
               key={tab}
@@ -54,7 +54,7 @@ export function ProductGrid() {
                   : t("navigation.forHim")}
             </motion.button>
           ))}
-        </div>
+        </div> */}
       </motion.div>
 
       {/* Products Grid */}

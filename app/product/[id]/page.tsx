@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Header } from "../../components/Header";
 import { useCart } from "../../hooks/useCart";
@@ -51,6 +51,19 @@ export default function ProductDetailPage() {
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const { addToCart } = useCart();
+  const thumbnailScrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-slide main image every 5 seconds
+  useEffect(() => {
+    const imageCount = product?.images?.length || productImages.length;
+    if (imageCount <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % imageCount);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [product, currentImage]);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -69,12 +82,14 @@ export default function ProductDetailPage() {
   }, [id]);
 
   const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % productImages.length);
+    const imageCount = product?.images?.length || productImages.length;
+    setCurrentImage((prev) => (prev + 1) % imageCount);
   };
 
   const prevImage = () => {
+    const imageCount = product?.images?.length || productImages.length;
     setCurrentImage((prev) =>
-      prev - 1 < 0 ? productImages.length - 1 : prev - 1,
+      prev - 1 < 0 ? imageCount - 1 : prev - 1,
     );
   };
 
@@ -137,7 +152,11 @@ export default function ProductDetailPage() {
               </motion.div>
 
               {/* Thumbnail Gallery */}
-              <div className="flex gap-4 overflow-x-auto pb-2">
+              <div className="relative group">
+                <div 
+                  ref={thumbnailScrollRef}
+                  className="flex gap-4 overflow-x-auto pb-4 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                >
                 {product && product.images && product.images.length > 1 ? (
                   product.images.map((image, index) => (
                     <motion.button
@@ -153,7 +172,7 @@ export default function ProductDetailPage() {
                       <img
                         src={image}
                         alt={`${product.name} ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-pointer"
                       />
                     </motion.button>
                   ))
@@ -176,6 +195,29 @@ export default function ProductDetailPage() {
                       />
                     </motion.button>
                   ))
+                )}
+                </div>
+                
+                {/* Thumbnail Arrows */}
+                {((product?.images?.length || productImages.length) > 4) && (
+                  <>
+                    <button
+                      onClick={() => {
+                        if (thumbnailScrollRef.current) thumbnailScrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+                      }}
+                      className="absolute left-1 top-[48px] -translate-y-1/2 p-1.5 bg-white/90 shadow-md border border-gray-100 text-gray-800 rounded-full z-10 hover:bg-white cursor-pointer"
+                    >
+                      <ChevronLeft className="w-5 h-5 cursor-pointer" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (thumbnailScrollRef.current) thumbnailScrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+                      }}
+                      className="absolute right-1 top-[48px] -translate-y-1/2 p-1.5 bg-white/90 shadow-md border border-gray-100 text-gray-800 rounded-full z-10 hover:bg-white cursor-pointer"
+                    >
+                      <ChevronRight className="w-5 h-5 cursor-pointer" />
+                    </button>
+                  </>
                 )}
               </div>
             </div>

@@ -146,7 +146,7 @@ export function ProductCard({
         <h3 className="text-xl font-bold mb-2">{name}</h3>
         <p className="text-sm text-gray-600 mb-4 line-clamp-2">{description}</p>
 
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex flex-col gap-4 pt-4 border-t border-gray-100">
           <div className="flex flex-col items-start gap-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">50% OFF</span>
@@ -157,10 +157,24 @@ export function ProductCard({
             </p>
           </div>
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={(e) => {
+              e.preventDefault();
+              addToCart({
+                productId: id,
+                variantId: defaultVariantId || `${id}01`,
+                productName: name,
+                price: Number(price.replace(/[^0-9.]/g, "")) * 0.5,
+                image,
+                sku: `HICK-${id}`,
+                size: "Standard",
+                quantity: 1,
+              });
+            }}
+            className="w-full py-2.5 bg-gray-900 text-white rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors cursor-pointer text-center flex items-center justify-center gap-2"
           >
+            <ShoppingBag className="w-4 h-4" />
             Add to Cart
           </motion.button>
         </div>

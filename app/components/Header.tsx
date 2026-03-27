@@ -75,7 +75,7 @@ export function Header() {
             </Link>
 
             {/* Right - Actions */}
-            <div className="flex items-center justify-end gap-1 sm:gap-2 lg:gap-4 flex-1">
+            <div className="flex items-center justify-end gap-1 sm:gap-2 lg:gap-7 flex-1">
                 <Link
                   href="/collection"
                   className="text-sm font-medium hover:text-gray-600 transition-colors"
@@ -89,7 +89,7 @@ export function Header() {
                 onClick={openCart}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors relative cursor-pointer"
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (

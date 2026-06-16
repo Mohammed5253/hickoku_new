@@ -7,7 +7,9 @@ export async function POST(request: NextRequest) {
     try {
         const payload = await request.text();
         const signature = request.headers.get("x-razorpay-signature");
-        const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+        
+        const isProd = process.env.APP_ENV === "prod";
+        const secret = isProd ? process.env.RAZORPAY_WEBHOOK_SECRET_PROD : process.env.RAZORPAY_WEBHOOK_SECRET_STAGE;
 
         if (!signature || !secret) {
             console.error("Missing signature or webhook secret");

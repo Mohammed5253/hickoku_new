@@ -2,10 +2,11 @@
 
 import Script from "next/script";
 
-export default function GoogleAnalytics() {
+export default function GoogleAnalytics({ env }: { env?: string }) {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
-  if (!GA_ID) return null;
+  // Only run in production and if GA_ID is present
+  if (env !== "prod" || !GA_ID) return null;
 
   return (
     <>

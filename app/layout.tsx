@@ -9,13 +9,15 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import FacebookPixel from "./components/FacebookPixel";
 import GoogleAnalytics from "./components/GoogleAnalytics";
+import { WhatsAppStickyButton } from "./components/WhatsAppStickyButton";
+import { GoogleTagManager } from '@next/third-parties/google'
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_URL || "https://www.hickoku.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://www.hickoku.com"),
   title: "Hickoku Perfumes",
   description: "Affordable Premium Perfume Brand for Everyone",
-  keywords: ["alcohol free perfumes", "attar under 250","rose flavour attar","rose flavour perfume", "perfume under 250","premium perfumes", "affordable luxury fragrances", "Hickoku perfumes", "buy original attars online India","buy original perfumes online India", "long lasting attars", "long lasting attar"],
+  keywords: ["Mother's Day Special", "best perfume for men", "best perfume for women", "luxury scents India", "top rated fragrances", "alcohol free perfumes", "attar under 250","rose flavour attar","rose flavour perfume", "perfume under 250","premium perfumes", "affordable luxury fragrances", "Hickoku perfumes", "buy original attars online India","buy original perfumes online India", "long lasting attars", "long lasting attar"],
   icons: {
     icon: "/images/logo.png",
   },
@@ -58,26 +60,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head />
       <body>
-        <GoogleAnalytics />
+        {process.env.NEXT_PUBLIC_GTM_ID && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+            />
+          </noscript>
+        )}
+        <GoogleAnalytics env={process.env.APP_ENV} />
+
         <LocaleProvider>
 
           <ProductProvider>
             <CartProvider>
               {children}
               <CartDrawer />
+              <WhatsAppStickyButton />
               <Toaster position="top-right" />
             </CartProvider>
           </ProductProvider>
         </LocaleProvider>
         <Analytics/>
         <SpeedInsights/>
-        <FacebookPixel />
+        <FacebookPixel env={process.env.APP_ENV} />
       </body>
-
-
+      {process.env.NEXT_PUBLIC_GTM_ID && (
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+      )}
     </html>
+
   );
 }

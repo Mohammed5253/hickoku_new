@@ -71,6 +71,23 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Get current order state to check for idempotency
+        const order = await orderRepository.getOrder(body.orderId);
+        
+        if (!order) {
+            return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        }
+
+        // If webhook beat the frontend and already processed the payment
+        if (order.paymentStatus === "paid") {
+            console.log(`[Verify-Payment] Order ${body.orderId} already paid (likely via webhook). Returning early.`);
+            return NextResponse.json({
+                success: true,
+                alreadyProcessed: true,
+                order
+            });
+        }
+
         // Payment verified successfully
         const now = new Date().toISOString();
         await orderRepository.updatePaymentDetails(body.orderId, {
@@ -82,8 +99,8 @@ export async function POST(request: NextRequest) {
             confirmedAt: now,
         });
 
-        // Get updated order to process items
-        const order = await orderRepository.getOrder(body.orderId);
+        // Get updated order to process items (we can just use the order object we already have, but let's refresh to be safe)
+        const updatedOrder = await orderRepository.getOrder(body.orderId);
 
         // Deduct Stock
         if (order && order.items) {

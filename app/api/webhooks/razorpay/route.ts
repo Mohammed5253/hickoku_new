@@ -87,28 +87,30 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Trigger Background Tasks (Delhivery Sync & Email)
+        // Trigger Delhivery Sync & Email
+        // VERY IMPORTANT: On Vercel, we MUST `await` these. If we fire them in the background
+        // and return the response immediately, Vercel kills the function and the emails never send.
+        
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
         
-        // Execute sync first, then email (so AWB is captured)
-        // We use an async IIFE so we don't block the webhook response to Razorpay
-        (async () => {
-            try {
-                await fetch(`${appUrl}/api/orders/delhivery-sync`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ orderId }),
-                });
-                
-                await fetch(`${appUrl}/api/orders/send-email`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ orderId }),
-                });
-            } catch (e) {
-                console.error("Webhook: Background tasks failed", e);
-            }
-        })();
+        try {
+            console.log(`[Webhook] Triggering Delhivery Sync for ${orderId}...`);
+            await fetch(`${appUrl}/api/orders/delhivery-sync`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId }),
+            });
+            
+            console.log(`[Webhook] Triggering Email Dispatch for ${orderId}...`);
+            await fetch(`${appUrl}/api/orders/send-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId }),
+            });
+            console.log(`[Webhook] Background tasks completed for ${orderId}`);
+        } catch (e) {
+            console.error("[Webhook] Tasks failed", e);
+        }
 
         return NextResponse.json({ success: true, orderId });
     } catch (error: any) {

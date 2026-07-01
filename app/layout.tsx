@@ -44,6 +44,7 @@ export const metadata: Metadata = {
     images: ["/images/logo.png"],
   },
   other: {
+    "facebook-domain-verification": "0ll7p818bfpmfos2g6x38xgoirgynf",
     ...(process.env.FB_APP_ID && { "fb:app_id": process.env.FB_APP_ID }),
     ...(process.env.PINTEREST_VERIFY && { "p:domain_verify": process.env.PINTEREST_VERIFY }),
   },

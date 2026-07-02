@@ -16,7 +16,10 @@ const client = new DynamoDBClient({
 });
 
 const docClient = DynamoDBDocumentClient.from(client);
-const TABLE_NAME = process.env.DYNAMODB_ORDERS_TABLE || "orders";
+// Table is auto-selected by APP_ENV:
+//   APP_ENV=prod  → "orders"        (production table)
+//   APP_ENV=stage → "orders-stage"  (isolated staging table)
+const TABLE_NAME = process.env.APP_ENV === "prod" ? "orders" : "orders-stage";
 
 
 
